@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Does the browser support webgl?</title>
+
+  <script type="application/x-javascript">
+  function main() {
+     var result = document.getElementById('result');
+     if (window.WebGLRenderingContext) {
+        result.innerHTML = "Browser supports WebGl";
+     }
+     else {
+        result.innerHTML = "Browser does not suppoert WebGl";
+     }
+  }
+  window.onload = main;
+  </script>
+
+</head>
+
+<body onload='main()'>
+  <div id='result'></div>
+</body>
+
+</html>

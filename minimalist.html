@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <title>WebGL - the minimum</title>
+
+  <script type="text/javascript">
+    "use strict";
+
+    function init() {
+
+      var canvas = window.document.getElementById('webgl_canvas');
+
+      var gl = canvas.getContext('experimental-webgl');
+
+      if (!gl) {
+        window.alert('experimental-webgl not found!');
+        return;
+      }
+
+      var gl_program = gl.createProgram();
+
+      var vertex_shader_source_code =
+             'attribute vec4 vertex_coord; \
+              void main() { \
+                  gl_Position = vertex_coord; \
+              }';
+
+      var vertex_shader = gl.createShader(gl.VERTEX_SHADER);
+
+      //
+      //  Connect vertex shader with source code:
+      //
+          gl.shaderSource(vertex_shader, vertex_shader_source_code);
+
+      //
+      //  Compile
+      //
+          gl.compileShader(vertex_shader);
+
+      //
+      //  Add to program
+      //
+          gl.attachShader(gl_program, vertex_shader);
+
+      //  ----------------------------------------------------------
+
+      //
+      //  Fragment shader. Basically the same steps as above:
+      //   - source code
+      //   - creating shader
+      //   - connecting source code with gl program
+      //   - compilie shader
+      //   - add to program:
+      //
+      var fragment_shader_source_code =
+             'precision mediump float; \
+              void main() { \
+                  gl_FragColor = vec4(1.0, 0.7, 0.3, 1.0);\
+              } ';
+
+      var fragment_shader = gl.createShader(gl.FRAGMENT_SHADER);
+
+          gl.shaderSource(fragment_shader, fragment_shader_source_code);
+          gl.compileShader(fragment_shader);
+          gl.attachShader(gl_program, fragment_shader);
+
+      // -------------------------------------------------
+
+      //
+      //  Evertything is set up, time to link the program:
+      //
+
+          gl.linkProgram(gl_program);
+
+
+      //
+      //  Indicate which shader program should be used.
+      // (Theoretically, one could create more than one shader program)
+
+          gl.useProgram(gl_program);
+
+      //
+      //  Set color (RGBA) of background …
+      //
+          gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+      //
+      //  … and clear background:
+      //
+          gl.clear(gl.COLOR_BUFFER_BIT);
+
+
+
+      //
+      //  Connect a java script variable with the attribute of the shader:
+      //
+      var var_vertex_coord = gl.getAttribLocation(gl_program, 'vertex_coord');
+
+      //
+      //  The attribute must be enalbed before it can be used in a shader
+      //
+          gl.enableVertexAttribArray(var_vertex_coord);
+
+
+      //
+      //  Create a WebGL data buffer.
+      //  It tells WebGL that we want to have some memery set aside
+      //  in the hardware of the graphic chip for our data.
+      //
+      var data_buffer = gl.createBuffer();
+
+
+          gl.bindBuffer(gl.ARRAY_BUFFER, data_buffer);
+
+      //
+      //  Pass array data to active buffer
+      //
+
+          gl.bufferData(
+              gl.ARRAY_BUFFER,
+              new Float32Array([ 0.0,  0.1, 0.0,
+                                -0.1, -0.1, 0.0,
+                                 0.1, -0.1, 0.0 ]),
+              gl.STATIC_DRAW);
+
+      //
+      //  Define attributes
+      //
+          gl.vertexAttribPointer(
+               var_vertex_coord,    // index:      Index of vertex attribute
+               3,                   // size:       Number of components per vertix attribute (1..4)
+               gl.FLOAT,            // type:       Datatype
+               false,               // normalized:
+               0,                   // stride:
+               0                    // pointer:    Pointer to the first component of the first generic vertex attribute in the array
+          );
+
+      //
+      //  process vertices
+
+          gl.drawArrays(
+            gl.TRIANGLES, // mode:
+            0,            // first: specify starting index in enabled arrays (-> enableVertexAttribArray)
+            3             // count: Number of indices to be rendered.
+          );
+
+      }
+
+   </script>
+
+   </head>
+   <body onload="init()">
+       <canvas id="webgl_canvas" width="300" height="300"></canvas>
+   </body>
+
+</html>

@@ -4,6 +4,29 @@
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
   <title>WebGL - the minimum</title>
 
+  <script id='vertex-shader' type='webgl'>
+  //
+  // The source code for the vertex shader:
+  //
+     attribute vec4 vertex_coord;
+
+     void main() {
+        gl_Position = vertex_coord;
+     }
+
+  </script>
+
+  <script id='fragment-shader' type='webgl'>
+  //
+  // The source code for the fragment shader:
+  //
+      precision mediump float;
+
+      void main() {
+           gl_FragColor = vec4(1.0, 0.7, 0.3, 1.0);
+      }
+  </script>
+
   <script type="text/javascript">
     "use strict";
 
@@ -11,21 +34,18 @@
 
       var canvas = window.document.getElementById('webgl_canvas');
 
-      var gl = canvas.getContext('experimental-webgl');
+  //  var gl = canvas.getContext('experimental-webgl');
+      var gl = canvas.getContext('webgl'             );
 
       if (!gl) {
-        window.alert('experimental-webgl not found!');
-        return;
+      // window.alert('experimental-webgl not found!');
+         window.alert('webgl not found!');
+         return;
       }
 
       var gl_program = gl.createProgram();
 
-      var vertex_shader_source_code =
-             'attribute vec4 vertex_coord; \
-              void main() { \
-                  gl_Position = vertex_coord; \
-              }';
-
+      var vertex_shader_source_code = document.querySelector('#vertex-shader').text;
       var vertex_shader = gl.createShader(gl.VERTEX_SHADER);
 
       //
@@ -53,12 +73,7 @@
       //   - compilie shader
       //   - add to program:
       //
-      var fragment_shader_source_code =
-             'precision mediump float; \
-              void main() { \
-                  gl_FragColor = vec4(1.0, 0.7, 0.3, 1.0);\
-              } ';
-
+      var fragment_shader_source_code = document.querySelector('#fragment-shader').text;
       var fragment_shader = gl.createShader(gl.FRAGMENT_SHADER);
 
           gl.shaderSource(fragment_shader, fragment_shader_source_code);
@@ -91,14 +106,13 @@
           gl.clear(gl.COLOR_BUFFER_BIT);
 
 
-
       //
       //  Connect a java script variable with the attribute of the shader:
       //
       var var_vertex_coord = gl.getAttribLocation(gl_program, 'vertex_coord');
 
       //
-      //  The attribute must be enalbed before it can be used in a shader
+      //  The attribute must be enabled before it can be used in a shader
       //
           gl.enableVertexAttribArray(var_vertex_coord);
 
@@ -109,7 +123,6 @@
       //  in the hardware of the graphic chip for our data.
       //
       var data_buffer = gl.createBuffer();
-
 
           gl.bindBuffer(gl.ARRAY_BUFFER, data_buffer);
 

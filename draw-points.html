@@ -1,0 +1,100 @@
+<!doctype html>
+<!--
+
+-->
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <title>WebGL - the minimum</title>
+
+
+  <script type="text/javascript">
+    "use strict";
+
+    function init() {
+
+      var canvas = window.document.getElementById('webgl_canvas');
+
+      var gl  = canvas.getContext('webgl');
+      var prg = gl.createProgram();
+
+      var vtxSh = gl.createShader(gl.VERTEX_SHADER);
+      var frgSh = gl.createShader(gl.FRAGMENT_SHADER);
+
+      gl.shaderSource(vtxSh, `
+
+          attribute vec4 pos;
+
+          void main() {
+              gl_Position  = pos;
+              gl_PointSize = 20.0;
+          }
+     `);
+
+      gl.shaderSource(frgSh, `
+          precision mediump float;
+          uniform vec4 col;
+
+          void main() {
+              gl_FragColor = col;
+          }
+     `);
+
+      gl.compileShader(vtxSh);
+      gl.compileShader(frgSh);
+
+      gl.attachShader(prg, vtxSh);
+      gl.attachShader(prg, frgSh);
+
+      gl.linkProgram(prg);
+
+      gl.useProgram(prg);
+
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      let attrPos = gl.getAttribLocation (prg, 'pos')
+      let unifCol = gl.getUniformLocation(prg, 'col')
+
+      let g_points = []
+      let g_colors = []
+
+      canvas.onmousedown = function(ev) {
+
+         let x = ev.clientX
+         let y = ev.clientY
+
+         let rect = ev.target.getBoundingClientRect()
+
+         x = ((x - rect.left) - canvas.width / 2) / (canvas.width / 2)
+         y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2)
+
+         g_points.push([x, y])
+
+         let r = 0.5 + Math.random() * 0.5;
+         let g = 0.5 + Math.random() * 0.5;
+         let b = 0.5 + Math.random() * 0.5;
+
+         g_colors.push([
+            r,g,b, 1.0
+         ]);
+
+         gl.clear(gl.COLOR_BUFFER_BIT)
+
+         let len = g_points.length
+         for (let i = 0; i < len; ++i) {
+             gl.vertexAttrib3f(attrPos, g_points[i][0], g_points[i][1], 0.0)
+             gl.uniform4fv(unifCol, g_colors[i])
+             gl.drawArrays(gl.POINTS, 0, len)
+         }
+      }
+   }
+
+   </script>
+
+   </head>
+   <body onload="init()">
+       <canvas id="webgl_canvas" width="600" height="600"></canvas>
+   </body>
+
+</html>

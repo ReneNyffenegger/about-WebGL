@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <title>WebGL - the minimum</title>
+
+
+  <script type="text/javascript">
+    "use strict";
+
+    function init() {
+
+      var canvas = window.document.getElementById('webgl_canvas');
+      var gl  = canvas.getContext('webgl');
+      var prg = gl.createProgram();
+
+      var vtxShdr = gl.createShader(gl.VERTEX_SHADER  );
+      var frgShdr = gl.createShader(gl.FRAGMENT_SHADER);
+
+      gl.shaderSource(vtxShdr, `
+            attribute vec4 pos;
+            attribute vec4 col;
+
+            varying lowp vec4 gCol;
+
+            void main() {
+               gl_Position = pos;
+
+               gCol        = col;
+            }
+
+      `);
+
+
+
+      gl.shaderSource(frgShdr, `
+         precision mediump float;
+
+         varying   lowp vec4 gCol;
+
+         void main() {
+              gl_FragColor = gCol;
+         }
+
+      `);
+
+      gl.compileShader(vtxShdr);
+      gl.compileShader(frgShdr);
+
+      gl.attachShader(prg, vtxShdr);
+      gl.attachShader(prg, frgShdr);
+
+      gl.linkProgram(prg);
+      gl.useProgram(prg);
+
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      var pos              = gl.getAttribLocation(prg, 'pos');
+      var col              = gl.getAttribLocation(prg, 'col');
+
+      gl.enableVertexAttribArray(pos             );
+      gl.enableVertexAttribArray(col             );
+
+
+   // -----------------------------------
+
+   // Type of buf is WebGLBuffer
+
+      var bufPos = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufPos);
+
+      gl.bufferData(
+          gl.ARRAY_BUFFER,
+          //                 X     Y     Z
+          //                 --------------
+          new Float32Array([-0.9,  0.0,  0.0,   // red corner
+                            -0.1,  0.5,  0.0,   // green corner
+                            +0.4, -0.8,  0.0 ]),// blue corner
+
+          gl.STATIC_DRAW
+      );
+
+      gl.vertexAttribPointer(
+           pos     ,    // index:      Index of vertex attribute
+           3       ,    // size:       Number of components per vertix attribute (1..4)
+           gl.FLOAT,    // type:       Datatype
+           false   ,    // normalized
+           0       ,    // stride:
+           0            // offset/pointer:    Pointer to the first component of the first generic vertex attribute in the array
+      );
+
+      // ---------
+
+      var bufCol = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufCol);
+
+      gl.bufferData(
+         gl.ARRAY_BUFFER,
+          new Float32Array([ 1.0, 0.0, 0.0 , 1.0,   // red
+                             0.0, 1.0, 0.0 , 1.0,   // green
+                             0.0, 0.0, 1.0 , 1.0]), // blue
+         gl.STATIC_DRAW
+      );
+
+
+      gl.vertexAttribPointer(
+           col     ,    // index:      Index of vertex attribute
+           4       ,    // size:       Number of components per vertix attribute (1..4)
+           gl.FLOAT,    // type:       Datatype
+           false   ,    // normalized
+           0       ,    // stride:
+           0            // offset/pointer:    Pointer to the first component of the first generic vertex attribute in the array
+      );
+
+
+      gl.drawArrays(
+            gl.TRIANGLES, // mode:
+            0,            // first: specify starting index in enabled arrays (-> enableVertexAttribArray)
+            3             // count: Number of indices to be rendered.
+      );
+
+      }
+
+   </script>
+
+   </head>
+   <body onload="init()">
+       <canvas id="webgl_canvas" width="300" height="300"></canvas>
+   </body>
+
+</html>

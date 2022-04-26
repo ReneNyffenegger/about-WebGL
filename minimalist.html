@@ -88,16 +88,15 @@
       // -------------------------------------------------
 
       //
-      //  Evertything is set up, time to link the program:
+      //  Everything is set up, time to link the program:
       //
 
           gl.linkProgram(gl_program);
 
-
       //
       //  Indicate which shader program should be used.
       // (Theoretically, one could create more than one shader program)
-
+      //
           gl.useProgram(gl_program);
 
       //
@@ -110,9 +109,8 @@
       //
           gl.clear(gl.COLOR_BUFFER_BIT);
 
-
       //
-      //  Connect a java script variable with the attribute of the shader:
+      //  Connect a Java Script variable with the attribute of the shader:
       //
       var var_vertex_coord = gl.getAttribLocation(gl_program, 'vertex_coord');
 
@@ -120,7 +118,6 @@
       //  The attribute must be enabled before it can be used in a shader
       //
           gl.enableVertexAttribArray(var_vertex_coord);
-
 
       //
       //  Create a WebGL data buffer.
@@ -156,7 +153,7 @@
 
       //
       //  process vertices
-
+      //
           gl.drawArrays(
             gl.TRIANGLES, // mode:
             0,            // first: specify starting index in enabled arrays (-> enableVertexAttribArray)
